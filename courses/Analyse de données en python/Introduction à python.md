@@ -1,6 +1,6 @@
 # Introduction à python
 
-#Objectifs
+## Objectifs
 Apprendre les bases de l'analyse de données avec Python et explorer ses principaux packages.
 
 ## Concepts abordés
