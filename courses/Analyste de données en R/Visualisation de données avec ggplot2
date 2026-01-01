@@ -1,0 +1,85 @@
+# Notes sur `ggplot2` (R)
+
+`ggplot2` est une librairie pour la **visualisation de données**, basée sur la *Grammar of Graphics*. Elle permet de créer des graphiques modulaires, lisibles et esthétiques.
+
+---
+
+##  Structure générale d’un graphique ggplot
+
+```r
+ggplot(data = df, aes(x = x, y = y)) +
+  geom_point()
+- data : le data frame à utiliser
+- aes() : définit les variables des axes et autres esthétiques (couleur, taille, forme…)
+- geom_*() : le type de graphique (points, barres, lignes…)
+
+## Fonctions / géométries principales
+| Geom / Fonction    | Description                                                   | Exemple                                                      |
+| ------------------ | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| `geom_point()`     | Nuage de points                                               | `ggplot(df, aes(x = age, y = salaire)) + geom_point()`       |
+| `geom_line()`      | Courbe / ligne                                                | `ggplot(df, aes(x = date, y = ventes)) + geom_line()`        |
+| `geom_bar()`       | Diagramme en barres (compte automatiquement les occurrences)  | `ggplot(df, aes(x = sexe)) + geom_bar()`                     |
+| `geom_col()`       | Diagramme en barres avec **hauteur définie par une variable** | `ggplot(df_stats, aes(x = sexe, y = effectif)) + geom_col()` |
+| `geom_boxplot()`   | Boîte à moustaches (distribution)                             | `ggplot(df, aes(x = sexe, y = salaire)) + geom_boxplot()`    |
+| `geom_histogram()` | Histogramme                                                   | `ggplot(df, aes(x = age)) + geom_histogram(binwidth = 5)`    |
+
+## Esthétiques (aes)
+| Esthétique | Usage                       | Exemple              |
+| ---------- | --------------------------- | -------------------- |
+| `x`        | Axe horizontal              | `aes(x = age)`       |
+| `y`        | Axe vertical                | `aes(y = salaire)`   |
+| `color`    | Couleur du contour / points | `aes(color = sexe)`  |
+| `fill`     | Remplissage des formes      | `aes(fill = sexe)`   |
+| `size`     | Taille des points / lignes  | `aes(size = ventes)` |
+| `alpha`    | Transparence                | `aes(alpha = 0.5)`   |
+
+**NB :** color = contour / lignes, fill = intérieur des formes pleines (barres, boxplots).
+
+**Superposition de couches**
+`ggplot(df, aes(x = age, y = salaire)) +
+  geom_point() +
+  geom_smooth(method = "lm") # ligne de régression
+- On peut superposer plusieurs géométries.
+- geom_smooth() calcule et trace automatiquement une courbe de tendance.
+
+**Facettes (multi-graphique par variable)**
+`ggplot(df, aes(x = age, y = salaire)) +
+  geom_point() +
+  facet_wrap(~ sexe)`
+- theme_*() : style du graphique (theme_minimal, theme_classic, theme_bw, etc.)
+- labs() : titre et noms des axes
+- scale_color_manual() ou scale_fill_manual() : choisir tes propres couleurs
+
+**Exemple combiné avec dplyr : Utiliser dplyr pour préparer les données et ggplot2 pour les visualiser**
+`df %>%
+  group_by(sexe) %>%
+  summarise(age_moyen = mean(age, na.rm = TRUE)) %>%
+  ggplot(aes(x = sexe, y = age_moyen, fill = sexe)) +
+  geom_col() +
+  theme_minimal() +
+  labs(title = "Âge moyen par sexe")`
+
+## POints clés 
+- ggplot2 est modulaire : data + aesthetics + geom + layers + theme
+- color vs fill selon type de géométrie
+- facet_wrap pour des graphiques par groupe
+- Toujours préparer les données avec dplyr si nécessaire
+
+# Tableau résumé ggplot2
+
+| Fonction / Geom | Description | Exemple | Output simulé |
+|-----------------|------------|---------|---------------|
+| `geom_point()`  | Nuage de points | `ggplot(df, aes(x = age, y = salaire)) + geom_point()` | Points dispersés sur le graphique selon `age` et `salaire` |
+| `geom_line()`   | Ligne / courbe | `ggplot(df, aes(x = date, y = ventes)) + geom_line()` | Une ligne reliant les points de `ventes` au fil du temps |
+| `geom_bar()`    | Diagramme en barres (compte automatique) | `ggplot(df, aes(x = sexe)) + geom_bar()` | Barres représentant le nombre d’occurrences par sexe |
+| `geom_col()`    | Barres avec hauteur définie par une variable | `ggplot(df_stats, aes(x = sexe, y = effectif)) + geom_col()` | Barres de hauteur correspondant à `effectif` |
+| `geom_boxplot()`| Boîte à moustaches | `ggplot(df, aes(x = sexe, y = salaire)) + geom_boxplot()` | Boîtes montrant la distribution du `salaire` par sexe |
+| `geom_histogram()` | Histogramme | `ggplot(df, aes(x = age)) + geom_histogram(binwidth = 5)` | Barres montrant la répartition des âges |
+| `facet_wrap(~var)` | Crée un graphique pour chaque catégorie | `ggplot(df, aes(x = age, y = salaire)) + geom_point() + facet_wrap(~sexe)` | Deux graphiques séparés, un pour chaque sexe |
+| `aes(color = var)` | Change la couleur des points/lignes selon une variable | `ggplot(df, aes(x = age, y = salaire, color = sexe)) + geom_point()` | Points colorés selon `sexe` |
+| `aes(fill = var)` | Remplit l’intérieur des formes (barres, boxplots) | `ggplot(df, aes(x = sexe, y = effectif, fill = sexe)) + geom_col()` | Barres colorées selon `sexe` |
+| `geom_smooth(method = "lm")` | Ajoute une ligne de tendance / régression | `ggplot(df, aes(x = age, y = salaire)) + geom_point() + geom_smooth(method = "lm")` | Nuage de points + droite de régression |
+| `theme_*()` | Personnalise le style du graphique | `theme_minimal()`, `theme_classic()` | Graphique avec un style épuré ou classique |
+| `labs(title, x, y)` | Ajoute titres et noms des axes | `labs(title = "Âge vs Salaire", x = "Âge", y = "Salaire")` | Graphique avec titres et axes annotés |
+| `scale_color_manual(values = c())` | Choisir ses propres couleurs pour `color` | `scale_color_manual(values = c("F" = "red", "M" = "blue"))` | Points colorés avec les couleurs définies |
+| `scale_fill_manual(values = c())` | Choisir ses propres couleurs pour `fill` | `scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"))` | Barres ou boxplots colorés selon les valeurs choisies |
