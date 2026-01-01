@@ -6,7 +6,6 @@
 
 ##  Structure générale d’un graphique ggplot
 
-```r
 ggplot(data = df, aes(x = x, y = y)) +
   geom_point()
 - data : le data frame à utiliser
