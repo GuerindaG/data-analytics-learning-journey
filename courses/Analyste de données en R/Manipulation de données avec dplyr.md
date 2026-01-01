@@ -34,14 +34,14 @@ Maitriser les fonctions principales de dplyr pour manipuler les données
 - `group_by()` doit précéder `summarise()` pour calculer des statistiques **par groupe**.
 
 ## Exemple d'une structure de combinaison de fonction
-  df %>%
+  `df %>%
   filter(age >= 18) %>%
   group_by(sexe) %>%
   summarise(
     effectif = n(),
     age_moyen = mean(age, na.rm = TRUE)
   ) %>%
-  arrange(desc(age_moyen))
+  arrange(desc(age_moyen))`
 
 ### Autres fonctions 
 # `slice_max()` et `slice_min()` (dplyr)
